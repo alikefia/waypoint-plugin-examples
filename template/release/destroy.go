@@ -6,14 +6,16 @@ import (
 	"github.com/hashicorp/waypoint-plugin-sdk/terminal"
 )
 
-// Implement the Destroyer interface
+// DestroyFunc implements the Waypoint Destroyer interface.
+// Waypoint expects a function to be returned from this method
+// which is called during the destroy phase of the lifecycle.
 func (rm *ReleaseManager) DestroyFunc() interface{} {
 	return rm.destroy
 }
 
-// A DestroyFunc does not have a strict signature, you can define the parameters
-// you need based on the Available parameters that the Waypoint SDK provides.
-// Waypoint will automatically inject parameters as specified
+// A DestroyFunc does not have a strict signature, you define the parameters
+// you need based on the available parameters that the Waypoint SDK provides.
+// Waypoint automatically injects the parameters specified
 // in the signature at run time.
 //
 // Available input parameters:
@@ -28,11 +30,9 @@ func (rm *ReleaseManager) DestroyFunc() interface{} {
 // - terminal.UI
 // - *component.LabelSet
 //
-// In addition to default input parameters the Deployment from the DeployFunc step
-// can also be injected.
+// The output parameters for DestroyFunc must be a Struct which can
+// be serialized to Protocol Buffers binary format and an error.
 //
-// The output parameters for PushFunc must be a Struct which can
-// be serialzied to Protocol Buffers binary format and an error.
 // This Output Value will be made available for other functions
 // as an input parameter.
 //

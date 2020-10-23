@@ -17,6 +17,7 @@ type Builder struct {
 
 // Config Implements the Waypoint Configurable interface
 // Waypoint calls this method before parsing the config inside the use stanza.
+//
 // It expects a reference to a HCL annotated struct to be returned which will
 // be used when de-serialzing the config
 func (b *Builder) Config() (interface{}, error) {
@@ -24,7 +25,8 @@ func (b *Builder) Config() (interface{}, error) {
 }
 
 // ConfigSet implements the Waypoint ConfigurableNotify interface.
-// Waypoint calls this method when
+// Waypoint calls this method after it has deserialized the config to
+// the interface returned from the Config method.
 func (b *Builder) ConfigSet(config interface{}) error {
 	c, ok := config.(*BuildConfig)
 	if !ok {
@@ -40,15 +42,17 @@ func (b *Builder) ConfigSet(config interface{}) error {
 	return nil
 }
 
-// Implement Builder
+// BuildFunc implements the Builder interface
+// Waypoint expects a function to be returned from this method which
+// will be called during the build phase of the lifecycle.
 func (b *Builder) BuildFunc() interface{} {
 	// return a function which will be called by Waypoint
 	return b.build
 }
 
-// A BuildFunc does not have a strict signature, you can define the parameters
-// you need based on the Available parameters that the Waypoint SDK provides.
-// Waypoint will automatically inject parameters as specified
+// A BuildFunc does not have a strict signature, you define the parameters
+// you need based on the available parameters that the Waypoint SDK provides.
+// Waypoint automatically injects the parameters specified
 // in the signature at run time.
 //
 // Available input parameters:
@@ -64,9 +68,11 @@ func (b *Builder) BuildFunc() interface{} {
 // - *component.LabelSet
 //
 // The output parameters for BuildFunc must be a Struct which can
-// be serialzied to Protocol Buffers binary format and an error.
+// be serialized to Protocol Buffers binary format and an error.
+//
 // This Output Value will be made available for other functions
 // as an input parameter.
+//
 // If an error is returned, Waypoint stops the execution flow and
 // returns an error to the user.
 func (b *Builder) build(ctx context.Context, ui terminal.UI) (*Binary, error) {

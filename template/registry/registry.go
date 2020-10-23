@@ -17,12 +17,18 @@ type Registry struct {
 	config RegistryConfig
 }
 
-// Implement Configurable
+// Config Implements the Waypoint Configurable interface
+// Waypoint calls this method before parsing the config inside the use stanza.
+//
+// It expects a reference to a HCL annotated struct to be returned which will
+// be used when de-serialzing the config
 func (r *Registry) Config() (interface{}, error) {
 	return &r.config, nil
 }
 
-// Implement ConfigurableNotify
+// ConfigSet implements the Waypoint ConfigurableNotify interface.
+// Waypoint calls this method after it has deserialized the config to
+// the interface returned from the Config method.
 func (r *Registry) ConfigSet(config interface{}) error {
 	c, ok := config.(*RegistryConfig)
 	if !ok {
@@ -38,15 +44,17 @@ func (r *Registry) ConfigSet(config interface{}) error {
 	return nil
 }
 
-// Implement Registry
+// PushFunc implements the Registry interface
+// Waypoint expects a function to be returned from this method which
+// will be called during the build phase of the lifecycle.
 func (r *Registry) PushFunc() interface{} {
 	// return a function which will be called by Waypoint
 	return r.push
 }
 
-// A PushFunc does not have a strict signature, you can define the parameters
-// you need based on the Available parameters that the Waypoint SDK provides.
-// Waypoint will automatically inject parameters as specified
+// A PushFunc does not have a strict signature, you define the parameters
+// you need based on the available parameters that the Waypoint SDK provides.
+// Waypoint automatically injects the parameters specified
 // in the signature at run time.
 //
 // Available input parameters:
@@ -61,13 +69,12 @@ func (r *Registry) PushFunc() interface{} {
 // - terminal.UI
 // - *component.LabelSet
 //
-// In addition to default input parameters the builder.Binary from the Build step
-// can also be injected.
-//
 // The output parameters for PushFunc must be a Struct which can
-// be serialzied to Protocol Buffers binary format and an error.
+// be serialized to Protocol Buffers binary format and an error.
+//
 // This Output Value will be made available for other functions
 // as an input parameter.
+//
 // If an error is returned, Waypoint stops the execution flow and
 // returns an error to the user.
 func (r *Registry) push(ctx context.Context, ui terminal.UI, binary *builder.Binary) (*Artifact, error) {
@@ -77,5 +84,3 @@ func (r *Registry) push(ctx context.Context, ui terminal.UI, binary *builder.Bin
 
 	return &Artifact{}, nil
 }
-
-// Implement Authenticator

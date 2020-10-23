@@ -16,12 +16,18 @@ type ReleaseManager struct {
 	config ReleaseConfig
 }
 
-// Implement Configurable
+// Config Implements the Waypoint Configurable interface
+// Waypoint calls this method before parsing the config inside the use stanza.
+//
+// It expects a reference to a HCL annotated struct to be returned which will
+// be used when de-serialzing the config
 func (rm *ReleaseManager) Config() (interface{}, error) {
 	return &rm.config, nil
 }
 
-// Implement ConfigurableNotify
+// ConfigSet implements the Waypoint ConfigurableNotify interface.
+// Waypoint calls this method after it has deserialized the config to
+// the interface returned from the Config method.
 func (rm *ReleaseManager) ConfigSet(config interface{}) error {
 	_, ok := config.(*ReleaseConfig)
 	if !ok {
@@ -34,15 +40,17 @@ func (rm *ReleaseManager) ConfigSet(config interface{}) error {
 	return nil
 }
 
-// Implement Builder
+// ReleaseFunc implements the ReleaseManager interface
+// Waypoint expects a function to be returned from this method which
+// will be called during the build phase of the lifecycle.
 func (rm *ReleaseManager) ReleaseFunc() interface{} {
 	// return a function which will be called by Waypoint
 	return rm.release
 }
 
-// A BuildFunc does not have a strict signature, you can define the parameters
-// you need based on the Available parameters that the Waypoint SDK provides.
-// Waypoint will automatically inject parameters as specified
+// A ReleaseFunc does not have a strict signature, you define the parameters
+// you need based on the available parameters that the Waypoint SDK provides.
+// Waypoint automatically injects the parameters specified
 // in the signature at run time.
 //
 // Available input parameters:
@@ -56,12 +64,10 @@ func (rm *ReleaseManager) ReleaseFunc() interface{} {
 // - hclog.Logger
 // - terminal.UI
 // - *component.LabelSet
-
-// In addition to default input parameters the platform.Deployment from the Deploy step
-// can also be injected.
 //
 // The output parameters for ReleaseFunc must be a Struct which can
-// be serialzied to Protocol Buffers binary format and an error.
+// be serialized to Protocol Buffers binary format and an error.
+//
 // This Output Value will be made available for other functions
 // as an input parameter.
 //
