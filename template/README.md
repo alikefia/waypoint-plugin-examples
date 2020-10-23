@@ -64,7 +64,8 @@ DOCKER_BUILDKIT=1 docker build --output releases --progress=plain .
 
 ## Building and releasing with GitHub Actions
 
-When cloning the template a default GitHub Action is created at the path `.github/workflows/build-plugin.yaml`. You can use this action to automatically build and release your plugin.
+When cloning the template a default GitHub Action is created at the path `.github/workflows/build-plugin.yaml`. You can
+use this action to automatically build and release your plugin.
 
 The action has two main phases:
 1. **Build** - This phase builds the plugin binaries for all the supported architectures. It is triggered when pushing
@@ -72,4 +73,5 @@ The action has two main phases:
 1. **Release** - This phase creates a new GitHub release containing the built plugin. It is triggered when pushing tags
    which starting with `v`, for example `v0.1.0`.
 
-You can enable this action by clicking on the `Actions` tab in your GitHub repository and enabling GitHub Actions.
+To enable this action click on the `Actions` tab in your GitHub repository and click enable GitHub Actions for this
+repository.

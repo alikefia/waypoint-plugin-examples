@@ -15,12 +15,16 @@ type Builder struct {
 	config BuildConfig
 }
 
-// Implement Configurable
+// Config Implements the Waypoint Configurable interface
+// Waypoint calls this method before parsing the config inside the use stanza.
+// It expects a reference to a HCL annotated struct to be returned which will
+// be used when de-serialzing the config
 func (b *Builder) Config() (interface{}, error) {
 	return &b.config, nil
 }
 
-// Implement ConfigurableNotify
+// ConfigSet implements the Waypoint ConfigurableNotify interface.
+// Waypoint calls this method when
 func (b *Builder) ConfigSet(config interface{}) error {
 	c, ok := config.(*BuildConfig)
 	if !ok {

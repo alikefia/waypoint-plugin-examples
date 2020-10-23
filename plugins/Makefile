@@ -13,5 +13,7 @@ all:
 	@echo ""
 	@echo "### Install Plugins"
 	mkdir -p ./example_app/.waypoint/plugins
-	cp ./gobuilder_final/bin/* ./example_app/.waypoint/plugins
-	cp ./filepath/bin/* ./example_app/.waypoint/plugins
+
+	mkdir -p  ${HOME}/.config/waypoint/plugins
+	cp ./gobuilder_final/bin/* ${HOME}/.config/waypoint/plugins
+	cp ./filepath/bin/* ${HOME}/.config/waypoint/plugins

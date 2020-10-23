@@ -37,6 +37,7 @@ install:
 	@echo ""
 	@echo "Installing Plugin"
 
+	mkdir -p ${HOME}/.config/waypoint/plugins/
 	cp ./bin/${_ARCH}_amd64/waypoint-plugin-${PLUGIN_NAME}* ${HOME}/.config/waypoint/plugins/   
 
 # Zip the built plugin binaries
