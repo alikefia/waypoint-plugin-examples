@@ -7,12 +7,20 @@ import (
 	"github.com/hashicorp/waypoint-plugin-sdk/terminal"
 )
 
-type BuildConfig struct {
+// Config is used by Waypoint when serializing the config defined
+// in the "use" stanza
+//
+//use "myplugin" {
+//	directory = "my name"
+//}
+type Config struct {
 	Directory string `hcl:"directory,optional"`
 }
 
+// Builder defines a Waypoint component which can be used
+// during the build phase for building the application.
 type Builder struct {
-	config BuildConfig
+	config Config
 }
 
 // Config Implements the Waypoint Configurable interface
@@ -28,7 +36,7 @@ func (b *Builder) Config() (interface{}, error) {
 // Waypoint calls this method after it has deserialized the config to
 // the interface returned from the Config method.
 func (b *Builder) ConfigSet(config interface{}) error {
-	c, ok := config.(*BuildConfig)
+	c, ok := config.(*Config)
 	if !ok {
 		// The Waypoint SDK should ensure this never gets hit
 		return fmt.Errorf("Expected *BuildConfig as parameter")

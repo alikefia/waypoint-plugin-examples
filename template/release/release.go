@@ -8,12 +8,20 @@ import (
 	"github.com/hashicorp/waypoint-plugin-sdk/terminal"
 )
 
-type ReleaseConfig struct {
-	Active bool "hcl:directory,optional"
+// Config is used by Waypoint when serializing the config defined
+// in the "use" stanza
+//
+//use "myplugin" {
+//	active = true
+//}}
+type Config struct {
+	Active bool `hcl:"active,optional"`
 }
 
+// ReleaseManager defines a Waypoint component which can be used
+// during the release phase.
 type ReleaseManager struct {
-	config ReleaseConfig
+	config Config
 }
 
 // Config Implements the Waypoint Configurable interface
@@ -29,10 +37,10 @@ func (rm *ReleaseManager) Config() (interface{}, error) {
 // Waypoint calls this method after it has deserialized the config to
 // the interface returned from the Config method.
 func (rm *ReleaseManager) ConfigSet(config interface{}) error {
-	_, ok := config.(*ReleaseConfig)
+	_, ok := config.(*Config)
 	if !ok {
 		// The Waypoint SDK should ensure this never gets hit
-		return fmt.Errorf("Expected *ReleaseConfig as parameter")
+		return fmt.Errorf("Expected *Config as parameter")
 	}
 
 	// validate the config

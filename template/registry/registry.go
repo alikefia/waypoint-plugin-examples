@@ -8,20 +8,42 @@ import (
 	"github.com/hashicorp/waypoint-plugin-sdk/terminal"
 )
 
-type RegistryConfig struct {
-	Name    string "hcl:name"
-	Version string "hcl:version"
+// Config is used by Waypoint when serializing the config stanza
+//
+//use "myplugin" {
+//	name = "my name"
+//	version = "my version"
+//
+//  runtime {
+//  	os = "mac"
+//    architecture = "amd64"
+//  }
+//}
+type Config struct {
+	Name    string   `hcl:"name"`
+	Version string   `hcl:"version"`
+	Runtime *Runtime `hcl:"runtime,block"`
 }
 
+// Runtime is a child config block
+// which stores the architecture for the release
+type Runtime struct {
+	OS   string `hcl:"os,optional"`
+	Arch string `hcl:"arch,optional"`
+}
+
+// Registry defines a Waypoint component which can be used
+// during the build phase for deploying built artifacts to a
+// registry.
 type Registry struct {
-	config RegistryConfig
+	config Config
 }
 
 // Config Implements the Waypoint Configurable interface
 // Waypoint calls this method before parsing the config inside the use stanza.
 //
 // It expects a reference to a HCL annotated struct to be returned which will
-// be used when de-serialzing the config
+// be used when de-serialzing the config.
 func (r *Registry) Config() (interface{}, error) {
 	return &r.config, nil
 }
@@ -30,7 +52,7 @@ func (r *Registry) Config() (interface{}, error) {
 // Waypoint calls this method after it has deserialized the config to
 // the interface returned from the Config method.
 func (r *Registry) ConfigSet(config interface{}) error {
-	c, ok := config.(*RegistryConfig)
+	c, ok := config.(*Config)
 	if !ok {
 		// The Waypoint SDK should ensure this never gets hit
 		return fmt.Errorf("Expected *RegisterConfig as parameter")
@@ -38,7 +60,11 @@ func (r *Registry) ConfigSet(config interface{}) error {
 
 	// validate the config
 	if c.Name == "" {
-		return fmt.Errorf("Name must be set to a valid directory")
+		return fmt.Errorf("Please specify the name for the artifact")
+	}
+
+	if c.Version == "" {
+		return fmt.Errorf("Please specify the version for the artifact")
 	}
 
 	return nil
