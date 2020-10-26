@@ -1,15 +1,30 @@
 #!/bin/bash
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  echo "linux"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-  echo "darwin"
-elif [[ "$OSTYPE" == "cygwin" ]]; then
-  # POSIX compatibility layer and Linux environment emulation for Windows
-  echo "windows"
-elif [[ "$OSTYPE" == "msys" ]]; then
-  # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
-  echo "windows"
-else
-  exit 1        # Unknown.
-fi
+function getArch {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+      echo "linux"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+      echo "darwin"
+    elif [[ "$OSTYPE" == "cygwin" ]]; then
+      # POSIX compatibility layer and Linux environment emulation for Windows
+      echo "windows"
+    elif [[ "$OSTYPE" == "msys" ]]; then
+      # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+      echo "windows"
+    else
+      exit 1        # Unknown.
+    fi
+}
+
+case $1 in
+  arch)
+    getArch;
+    ;;
+  config)
+    if [[ "$(getArch)" == "darwin" ]]; then
+      echo "${HOME}/Library/Preferences";
+    else
+      echo "${HOME}/.config"
+    fi
+    ;;
+esac

@@ -1,8 +1,14 @@
 PLUGIN_NAME=template
 
+# Helper function to set variables for architecutre and home folder
 ifndef _ARCH
-_ARCH := $(shell ./print_arch)
+_ARCH := $(shell ./print_arch arch)
 export _ARCH
+endif
+
+ifndef _CONFIG
+_CONFIG := $(shell ./print_arch config)
+export _CONFIG
 endif
 
 .PHONY: all
@@ -37,8 +43,8 @@ install:
 	@echo ""
 	@echo "Installing Plugin"
 
-	mkdir -p ${HOME}/.config/waypoint/plugins/
-	cp ./bin/${_ARCH}_amd64/waypoint-plugin-${PLUGIN_NAME}* ${HOME}/.config/waypoint/plugins/   
+	mkdir -p ${_CONFIG}/waypoint/plugins/
+	cp ./bin/${_ARCH}_amd64/waypoint-plugin-${PLUGIN_NAME}* ${_CONFIG}/waypoint/plugins/   
 
 # Zip the built plugin binaries
 zip:
